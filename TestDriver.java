@@ -6,7 +6,7 @@ import java.util.Iterator;
 public class TestDriver{
 	public static void main(String args[]){
 
-		DictionaryADT<String, Integer> Dict = new BalancedTreeDictionary<>();
+		DictionaryADT<String, Integer> Dict = new BalancedTreeDictionary<String, Integer>();
 		Dict.put("A", 1);
 		Dict.put("C", 3);
 		Dict.put("B", 2);

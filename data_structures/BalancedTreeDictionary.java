@@ -10,7 +10,7 @@ public class BalancedTreeDictionary<K extends Comparable <K>, V extends Comparab
 	public V get(K key){ return tmap.get(key); }
 	public K getKey(V value){
 		for(Map.Entry<K, V> entry : tmap.entrySet())
-			if(value.equals(entry.getValue()))
+			if(value.compareTo(entry.getValue()) == 0)
 				return entry.getKey();
 		return null;
 	}
