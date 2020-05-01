@@ -15,7 +15,7 @@ public class ATestDrive{
 		Dict.put("F", 6);
 		Dict.put("G", 7);
 		Dict.put("E", 5);
-		
+		Dict.delete("D");		
 		System.out.println(Dict.get("D"));
 		/*
 		Iterator<Integer> it = Dict.values();

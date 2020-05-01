@@ -44,7 +44,42 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 		else
 			insert(k,v,n.rightChild,n,false);
 	}
-	//public boolean delete(K key){;}
+	public boolean delete(K key){
+		Node<K,V> parent = null;
+		Node<K,V> current = root;
+		while(current != null){
+			if(current.key.compareTo(key) == 0){
+				if(current.leftChild == null && current.rightChild == null){ //leaf
+					if(parent == null) root = null;
+					else if(parent.leftChild == current) parent.leftChild = null;
+					else parent.rightChild = null;
+				}else if (current.leftChild != null && current.rightChild == null){ //only has leftChild
+					if(parent == null) root = current.leftChild;
+					else if(parent.leftChild == current) parent.leftChild = current.leftChild;
+					else parent.rightChild = current.leftChild;
+				}else if(current.leftChild == null && current.rightChild != null){ //only has rightChild
+					if(parent == null) root = current.rightChild;
+					else if (parent.leftChild == current) parent.leftChild = current.rightChild;
+					else parent.rightChild = current.rightChild; 
+				}else { //has both leftChild and rightChild.
+					Node<K,V> suc = current.rightChild;
+					while(suc.leftChild != null) suc = suc.leftChild; //find suc
+					Node<K,V> temp = new Node<K, V>(suc.key, suc.value); //copy key,value
+					temp.rightChild = suc.rightChild; //copy pointer (has no leftChild or that would in fact be suc)
+					delete(suc.key);
+					current = temp;
+				}
+				return true;
+			} else if (current.key.compareTo(key) < 0){
+				parent = current;
+				current = current.rightChild;
+			} else {
+				parent = current;
+				current = current.leftChild;
+			}
+		}
+		return false;	
+	}
 
 	public V get(K key){
 		return find(key, root);
