@@ -1,4 +1,5 @@
 package data_structures;
+import java.util.Scanner;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.ConcurrentModificationException;
@@ -20,13 +21,15 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 
 	private Node<K, V> root;
 	private int currentSize;
+	private int modificationCounter;
 	
 	public BinarySearchTree(){
 		root = null;
-		currentSize = 0;
+		modificationCounter = currentSize = 0;
 	}
 
 	public boolean put(K k, V v){
+		modificationCounter++;
 		if(root == null)
 			root = new Node<K, V>(k, v);
 		else
@@ -45,6 +48,7 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 			insert(k,v,n.rightChild,n,false);
 	}
 	public boolean delete(K key){
+		modificationCounter++;
 		Node<K,V> parent = null;
 		Node<K,V> current = root;
 		while(current != null){
@@ -101,13 +105,49 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 	public int size(){return currentSize;}
 	public boolean isFull(){return false;}
 	public boolean isEmpty(){return currentSize == 0;}
-	public void clear(){root=null;}
-	/*
+	public void clear(){modificationCounter++; root=null;}
+
+	private class IterK implements Iterator<K>{
+		private int state;
+		private Node<K,V> stack[];
+		private int sp;
+		private int max;
+
+		public IterK(){
+			state = modificationCounter;
+			sp = 0;
+			max = currentSize;
+			stack = (Node<K,V> []) new Node[max];
+			fillStack(root);
+			sp = 0;
+		}
+
+		private void fillStack(Node<K,V> cur){
+			if(cur == null) return;
+			else{
+				fillStack(cur.leftChild);
+				stack[sp++] = cur;
+				fillStack(cur.rightChild);
+			}
+		}
+
+		public boolean hasNext(){
+			if(state != modificationCounter) throw new ConcurrentModificationException();
+			return sp < max;
+		}
+		public K next(){
+			if(!hasNext()) throw new NoSuchElementException();
+			else{ 
+				
+				return stack[sp++].key; 
+			}
+		}
+	}
 	public Iterator<K> keys(){ 
-		;
+		return new IterK();
 	}
-	public Iterator<V> values(){
-		;
-	}
-	*/
+//	public Iterator<V> values(){
+//		;
+//	}
+	
 }

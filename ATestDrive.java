@@ -15,14 +15,15 @@ public class ATestDrive{
 		Dict.put("F", 6);
 		Dict.put("G", 7);
 		Dict.put("E", 5);
-		Dict.delete("D");		
-		System.out.println(Dict.get("D"));
-		/*
-		Iterator<Integer> it = Dict.values();
+//		Dict.delete("D");		
+//		System.out.println(Dict.get("D"));
+
+		
+		Iterator<String> it = Dict.keys();
 		while(it.hasNext())
 			System.out.println(it.next());
 		System.out.println();
-		System.out.println(Dict.getKey(4));
-		*/
+//		System.out.println(Dict.getKey(4));
+		
 	}
 }

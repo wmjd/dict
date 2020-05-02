@@ -38,7 +38,7 @@ public void clear();
 
 // Returns an Iterator of the keys in the dictionary, in ascending
 // sorted order
-//public Iterator<K> keys();
+public Iterator<K> keys();
 
 // Returns an Iterator of the values in the dictionary. The
 // order of the values must match the order of the keys.
