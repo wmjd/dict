@@ -21,7 +21,7 @@ public V get(K key);
 // null if the value is not found in the dictionary. If more
 // than one key exists that matches the given value, returns the
 // first one found.
-//public K getKey(V value);
+public K getKey(V value);
 
 // Returns the number of key/value pairs currently stored
 // in the dictionary
@@ -42,6 +42,6 @@ public Iterator<K> keys();
 
 // Returns an Iterator of the values in the dictionary. The
 // order of the values must match the order of the keys.
-//public Iterator<V> values();
+public Iterator<V> values();
 
 }

@@ -73,6 +73,7 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 					delete(suc.key);
 					current = temp;
 				}
+				currentSize--;
 				return true;
 			} else if (current.key.compareTo(key) < 0){
 				parent = current;
@@ -98,9 +99,15 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 		return (V) n.value;
 	}
 
-//	public K getKey(V value){
-//		;
-//	}
+	public K getKey(V value){
+		return findKey(value, root);
+	}
+	private K findKey(V value, Node<K,V> node){
+		if(node == null) return null;
+		if(((Comparable<V>) value).compareTo(node.value) == 0) return node.key;
+		K res = findKey(value, node.leftChild);
+		return (res == null) ? findKey(value, node.rightChild) : res;
+	}
 	
 	public int size(){return currentSize;}
 	public boolean isFull(){return false;}
@@ -146,8 +153,44 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 	public Iterator<K> keys(){ 
 		return new IterK();
 	}
-//	public Iterator<V> values(){
-//		;
-//	}
+	
+	private class IterV implements Iterator<V>{
+		private int state;
+		private Node<K,V> stack[];
+		private int sp;
+		private int max;
+
+		public IterV(){
+			state = modificationCounter;
+			sp = 0;
+			max = currentSize;
+			stack = (Node<K,V> []) new Node[max];
+			fillStack(root);
+			sp = 0;
+		}
+
+		private void fillStack(Node<K,V> cur){
+			if(cur == null) return;
+			else{
+				fillStack(cur.leftChild);
+				stack[sp++] = cur;
+				fillStack(cur.rightChild);
+			}
+		}
+
+		public boolean hasNext(){
+			if(state != modificationCounter) throw new ConcurrentModificationException();
+			return sp < max;
+		}
+		public V next(){
+			if(!hasNext()) throw new NoSuchElementException();
+			else{ 
+				return stack[sp++].value; 
+			}
+		}
+	}
+	public Iterator<V> values(){
+		return new IterV();
+	}
 	
 }
