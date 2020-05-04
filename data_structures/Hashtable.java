@@ -14,17 +14,13 @@ public class Hashtable<K extends Comparable <K>, V extends Comparable <V>> imple
 			this.value = value;
 		}
 		public int compareTo(Pair<K,V> p){
-//			System.out.println("in compareTo, p.key == " +(K)p.key);
-//			System.out.println(key);
-//			System.out.println("compare key to itself: "+ (Comparable <K>)key.compareTo((K) key));
-//			System.out.println(key + "\n");
-//			return 0;
 			return ((Comparable<K>) key).compareTo((K)p.key);
 		}
 	}
 
 	private ListADT<Pair<K,V>> table[]; 
 	private int tableSize;
+	private int numberCurrentEntries;
 	private int modificationCounter;
 
 	public Hashtable(int size){
@@ -43,49 +39,114 @@ public class Hashtable<K extends Comparable <K>, V extends Comparable <V>> imple
 	}
 
 	public boolean put(K key, V value){
-//		System.out.println(key.hashCode() % tableSize);
-//		System.out.println(key +", "+ value);
+		modificationCounter++;
 		Pair<K,V> entry = new Pair<>(key, value);
+		if(table[key.hashCode() % tableSize].contains(entry))
+			return false;
 		table[key.hashCode() % tableSize].addLast(entry);
+		numberCurrentEntries++;
 		return true;
 	}
 
+	public boolean delete(K key){
+		boolean res = table[key.hashCode() % tableSize].remove(new Pair(key, null));
+		if(res){
+			modificationCounter++;
+			numberCurrentEntries--;
+			return true;
+		} else return false;
+	}
+
 	public V get(K key){
-//		System.out.println(table[key.hashCode() % tableSize].search(new Pair(key, null)));
-//		Pair<K,V> p = new Pair<>(key, null);
-//		System.out.println("in get, p.key == " + p.key);
-//		System.out.println(p.compareTo(p));
 		Pair<K,V> searchResult = table[key.hashCode() % tableSize].search(new Pair(key, null));
 		return searchResult == null ? null : (V) searchResult.value;
 	}
 
-	
+	public K getKey(V value){
+		Iterator<Pair<K,V>> iter;	
+		Pair<K,V> p;
+
+		for(int i = 0; i < tableSize; i++){
+			iter = table[i].iterator();
+			while(iter.hasNext()){
+				p = iter.next();
+				if(p.value.compareTo(value) == 0)
+					return p.key;
+			}
+		}	
+		return null;
+	}
+
+	public int size(){return numberCurrentEntries;}
+	public boolean isFull(){return false;}
+	public boolean isEmpty(){return numberCurrentEntries == 0;}
+
+	public void clear(){
+		for(int i=0; i<tableSize; i++)
+			table[i].makeEmpty();
+		modificationCounter++;
+		numberCurrentEntries = 0;
+	}
+
 	private class IterK implements Iterator<K>{
 		private int state;
-		Iterator<Pair<K,V>> iter;	
-		int currentTableIndex;
+		private Iterator<Pair<K,V>> iter;	
+		private int keysIndex;
+		private K[] keys;
+	
 
-		public IterK(){
+	public IterK(){
 			state = modificationCounter;
-			iter = table[0].iterator();
-			currentTableIndex = 0;
+			keys = (K[]) new Comparable[numberCurrentEntries];
+			int j;
+			keysIndex = j = 0;
+			for(int i = 0; i < tableSize; i++){
+				iter = table[i].iterator();
+				while(iter.hasNext())
+					keys[j++] = iter.next().key;
+			}			
 		}
 		public boolean hasNext(){
 			if(state != modificationCounter) throw new ConcurrentModificationException();
-			else if(iter.hasNext()) return true;
-			else if(++currentTableIndex < tableSize){
-				iter = table[currentTableIndex].iterator();
-				return iter.hasNext();
-			}
-			else return false;
+			return keysIndex < numberCurrentEntries;
 		}
 		public K next(){
-			return iter.next().key;
+			return keys[keysIndex++];
+		}
+	}
+	private class IterV implements Iterator<V>{
+		private int state;
+		private Iterator<Pair<K,V>> iter;	
+		private int valuesIndex;
+		private V[] values;
+	
+
+
+		public IterV(){
+			state = modificationCounter;
+			values = (V[]) new Comparable[numberCurrentEntries];
+			int j;
+			valuesIndex = j = 0;
+			for(int i = 0; i < tableSize; i++){
+				iter = table[i].iterator();
+				while(iter.hasNext())
+					values[j++] = iter.next().value;
+			}			
+		}
+		public boolean hasNext(){
+			if(state != modificationCounter) throw new ConcurrentModificationException();
+			return valuesIndex < numberCurrentEntries;
+		}
+		public V next(){
+			return values[valuesIndex++];
 		}
 	}
 
 	public Iterator<K> keys(){
 		return new IterK();
+	}
+	public Iterator<V> values(){
+		return new IterV();
 	}
 	
 }
