@@ -29,23 +29,28 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 	}
 
 	public boolean put(K k, V v){
-		modificationCounter++;
-		if(root == null)
+		if(root == null){
 			root = new Node<K, V>(k, v);
+			currentSize++;
+			modificationCounter++;
+			return true;
+		}
 		else
-			insert(k,v,root,null,false);
-		currentSize++;
-		return true;
+			return insert(k,v,root,null,false);
 	}
-	private void insert(K k, V v, Node<K, V> n, Node<K, V> parent, boolean wasLeft){
+	private boolean insert(K k, V v, Node<K, V> n, Node<K, V> parent, boolean wasLeft){
 		if(n == null){
 			if(wasLeft) parent.leftChild = new Node<K, V>(k, v);
 			else parent.rightChild = new Node<K, V>(k, v);
-		}
+			currentSize++;
+			modificationCounter++;
+			return true;
+		} else if(((Comparable <K>) k).compareTo((K) n.key) == 0)
+			return false; //duplicate
 		else if(((Comparable <K>) k).compareTo((K) n.key) < 0)
-			insert(k,v,n.leftChild,n,true);
+			return insert(k,v,n.leftChild,n,true);
 		else
-			insert(k,v,n.rightChild,n,false);
+			return insert(k,v,n.rightChild,n,false);
 	}
 	public boolean delete(K key){
 		modificationCounter++;
@@ -112,7 +117,7 @@ public class BinarySearchTree<K extends Comparable <K>, V extends Comparable <V>
 	public int size(){return currentSize;}
 	public boolean isFull(){return false;}
 	public boolean isEmpty(){return currentSize == 0;}
-	public void clear(){modificationCounter++; root=null;}
+	public void clear(){modificationCounter++; currentSize = 0; root=null;}
 
 	private class IterK implements Iterator<K>{
 		private int state;

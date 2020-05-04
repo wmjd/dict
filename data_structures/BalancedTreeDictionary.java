@@ -5,7 +5,9 @@ public class BalancedTreeDictionary<K extends Comparable <K>, V extends Comparab
 
 	protected Map<K, V> tmap;
 	public BalancedTreeDictionary(){ tmap = new TreeMap<>(); }
-	public boolean put(K key, V value){ return tmap.put(key, value) != null; }
+	public boolean put(K key, V value){ 
+		return tmap.containsKey(key) ? false : tmap.put(key, value) == null; 
+	}
 	public boolean delete(K key){ return tmap.remove(key) != null; }
 	public V get(K key){ return tmap.get(key); }
 	public K getKey(V value){
