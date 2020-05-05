@@ -1,5 +1,4 @@
 package data_structures;
-import java.util.Scanner;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.ConcurrentModificationException;
